@@ -99,7 +99,12 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
         graph_list = ['Control_Mode', 'Battery_Voltage', 'Interrupt_Load', 'Motor_Duty', 'Velocity', 'Angular_Velocity', 'Distance', 'Angle', 
                       'IR_Sensor', 'Wall_Edge', 'Velocity_Control', 'Angular_Control', 'Gap']
         if hasattr(self, 'ax') == False:
-            self.ax = {graph : self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1) for num, graph in enumerate(graph_list)}
+            for num, graph in enumerate(graph_list):
+                if num == 0:
+                    self.ax = {graph : self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1)}
+                else:
+                    self.ax[graph] = self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1, sharex=self.ax[graph_list[0]])
+            
         for _, graph in enumerate(self.ax.keys()):
             if graph == 'Control_Mode':
                 self.ax[graph].plot(_data['Time'], _data['Mode'])
