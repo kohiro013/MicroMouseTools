@@ -43,7 +43,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
         self.ui.treeViewDataList.setModel(self.fileModel)
         self.ui.treeViewDataList.setRootIndex(self.fileModel.index(self.rootPath))
         self.ui.treeViewDataList.setSortingEnabled(True)
-        self.ui.treeViewDataList.sortByColumn(3)
+        self.ui.treeViewDataList.sortByColumn(3, QtCore.Qt.SortOrder.AscendingOrder)
         self.ui.treeViewDataList.hideColumn(1)
         self.ui.treeViewDataList.hideColumn(2)
         self.ui.treeViewDataList.hideColumn(3)
@@ -71,10 +71,11 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
         
         # ログの通信開始コマンド
         while comport.in_waiting == 0:
-            comport.write(b'l')
+            comport.write(b'log\r\n')
 
         # ログの受信
         log_line = []
+        _ = comport.readline()
         header_list = comport.readline().decode().strip().replace(" ", "").split(",")
         while 1:
             recv_data = comport.readline()
@@ -95,7 +96,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
 
     # ログデータの表示
     def displayLogData(self, _data):
-        graph_list = ['Control_Mode', 'Battery_Voltage', 'Interrupt_Load', 'Motor_Duty', 'Current', 'Velocity', 'Angular_Velocity', 'Distance', 'Angle', 
+        graph_list = ['Control_Mode', 'Battery_Voltage', 'Interrupt_Load', 'Motor_Duty', 'Velocity', 'Angular_Velocity', 'Distance', 'Angle', 
                       'IR_Sensor', 'Wall_Edge', 'Velocity_Control', 'Angular_Control', 'Gap']
         if hasattr(self, 'ax') == False:
             self.ax = {graph : self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1) for num, graph in enumerate(graph_list)}
