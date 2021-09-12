@@ -6,6 +6,7 @@ import serial
 import serial.tools.list_ports
 import datetime
 import csv
+import mplcursors
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 from matplotlib.figure import Figure
@@ -104,77 +105,105 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                     self.ax = {graph : self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1)}
                 else:
                     self.ax[graph] = self.ui.widget.canvas.figure.add_subplot(len(graph_list), 1, num+1, sharex=self.ax[graph_list[0]])
-            
+
+        plots = []
+        vline = []
+        texts = []
         for _, graph in enumerate(self.ax.keys()):
             if graph == 'Control_Mode':
-                self.ax[graph].plot(_data['Time'], _data['Mode'])
+                plots.append(self.ax[graph].plot(_data['Time'], _data['Mode'])[0])
                 mode_list = ['ERROR', 'NONE', 'SEARCH', 'FASTEST', 'TURN', 'ROTATE', 'DIAGONAL', 'FWALL', 'ADJUST']
                 self.ax[graph].set_yticks(range(-1, len(mode_list)-1))
                 self.ax[graph].set_yticklabels(mode_list)
             elif graph == 'Battery_Voltage':
-                self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])[0])
                 self.ax[graph].set_yticks([i / 10 for i in range(0, 51, 5)])
             elif graph == 'Interrupt_Load':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Load']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Load']])[0])
                 self.ax[graph].set_yticks([i / 10 for i in range(0, 1001, 100)])
             elif graph == 'Motor_Duty':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Duty_L']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Duty_R']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Duty_L']], 
+                                                 _data['Time'], [data/10 for data in _data['Duty_R']])[0])
+                #self.ax[graph].plot()
                 self.ax[graph].set_yticks([i / 10 for i in range(-1000, 1001, 100)])
                 self.ax[graph].legend(['Left', 'Right'], loc='best')
             elif graph == 'Current':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Current_L']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Current_R']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Current_L']],
+                                                 _data['Time'], [data/10 for data in _data['Current_R']])[0])
                 #self.ax[graph].set_yticks([i / 10 for i in range(-1000, 1001, 100)])
                 self.ax[graph].legend(['Left', 'Right'], loc='best')
             elif graph == 'Force':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Force_L']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Force_R']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Force_L']],
+                                                 _data['Time'], [data/10 for data in _data['Force_R']])[0])
                 self.ax[graph].set_yticks([i / 10 for i in range(0, 3001, 500)])
                 self.ax[graph].legend(['Left', 'Right'], loc='best')
             elif graph == 'Velocity':
-                self.ax[graph].plot(_data['Time'], _data['Target_V'], 'k')
-                self.ax[graph].plot(_data['Time'], _data['Measure_V'])
+                plots.append(self.ax[graph].plot(_data['Time'], _data['Target_V'], 'k',
+                                                 _data['Time'], _data['Measure_V'])[0])
+                self.ax[graph].legend(['Target', 'Measure'], loc='best')
             elif graph == 'Angular_Velocity':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Omega']], 'k')
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Measure_Omega']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Omega']], 'k',
+                                                 _data['Time'], [data/10 for data in _data['Measure_Omega']])[0])
+                self.ax[graph].legend(['Target', 'Measure'], loc='best')
             elif graph == 'Distance':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_D']], 'k')
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Measure_D']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_D']], 'k',
+                                                 _data['Time'], [data/10 for data in _data['Measure_D']])[0])
+                self.ax[graph].legend(['Target', 'Measure'], loc='best')
             elif graph == 'Angle':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Theta']], 'k')
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Measure_Theta']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Theta']], 'k',
+                                                 _data['Time'], [data/10 for data in _data['Measure_Theta']])[0])
+                self.ax[graph].legend(['Target', 'Measure'], loc='best')
             elif graph == 'IR_Sensor':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_SL']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_FL']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_FR']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_SR']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_SL']],
+                                                 _data['Time'], [data/10 for data in _data['Sensor_FL']],
+                                                 _data['Time'], [data/10 for data in _data['Sensor_FR']],
+                                                 _data['Time'], [data/10 for data in _data['Sensor_SR']])[0])
                 self.ax[graph].set_ylim(0, 200)
                 self.ax[graph].legend(['SL', 'FL', 'FR', 'SR'], loc='best')
             elif graph == 'Sensor_Delta':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['SensorDelta_SL']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['SensorDelta_SR']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['SensorDelta_SL']],
+                                                 _data['Time'], [data/10 for data in _data['SensorDelta_SR']])[0])
                 self.ax[graph].set_ylim(-50, 50)
                 self.ax[graph].legend(['SL', 'SR'], loc='best')
             elif graph == 'Wall_Edge':
-                self.ax[graph].plot(_data['Time'], _data['Edge_SL'])
-                self.ax[graph].plot(_data['Time'], _data['Edge_SR'])
+                plots.append(self.ax[graph].plot(_data['Time'], _data['Edge_SL'],
+                                                 _data['Time'], _data['Edge_SR'])[0])
                 self.ax[graph].legend(['SL', 'SR'], loc='best')
             elif graph == 'Velocity_Control':
-                self.ax[graph].plot(_data['Time'], _data['Control_Encoder'])
+                plots.append(self.ax[graph].plot(_data['Time'], _data['Control_Encoder'])[0])
                 self.ax[graph].set_ylim(-8000, 8000)
             elif graph == 'Angular_Control':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Control_Gyro']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Control_Angle']])
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Control_Sensor']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Control_Gyro']],
+                                                 _data['Time'], [data/10 for data in _data['Control_Angle']],
+                                                 _data['Time'], [data/10 for data in _data['Control_Sensor']])[0])
                 self.ax[graph].set_ylim(-800, 800)
                 self.ax[graph].legend(['Gyro', 'Angle', 'Sensor'], loc='best')
             elif graph == 'Gap':
-                self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Gap']])
+                plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Gap']])[0])
 
             self.ax[graph].grid(which='major', color='black', linestyle='--', alpha=0.2)
             #self.ax[graph].set_xlabel('Time')
             self.ax[graph].set_ylabel(graph)
+            vline.append(self.ax[graph].axvline(0, color='k', ls=':', alpha=0.5, visible=True))
+            texts.append(self.ax[graph].text(0.02, 0.95, "", horizontalalignment='left', verticalalignment='top', transform=self.ax[graph].transAxes))
+
+        def crosshair(sel):
+            x = sel.target[0]
+            #sel.annotation.set_text(f'x: {x:.2f}\ny: {y:.2f}')
+            sel.annotation.set_visible(False)
+            for num, graph in enumerate(graph_list):
+                vline[num].set_xdata([x])
+                if(self.ax[graph].get_legend() == None):
+                    texts[num].set_text('Time=%1.3f\nValue=%f'%(x, plots[num].get_ydata()[int(x*max(_data['Time'])/len(_data['Time']))]))
+                else:
+                    text = 'Time=%1.3f' %x
+                    for i in range(len(self.ax[graph].get_legend().get_texts())):
+                        text += '\n%s=%f' %(self.ax[graph].get_legend().get_texts()[i].get_text(), 
+                                            self.ax[graph].get_lines()[i].get_data()[1][int(x*max(_data['Time'])/len(_data['Time']))])
+                    texts[num].set_text(text)
+        
+        cursor = mplcursors.cursor(plots, hover=True)
+        cursor.connect('add', crosshair)
         self.ui.widget.canvas.draw()
 
     # データとグラフの削除
