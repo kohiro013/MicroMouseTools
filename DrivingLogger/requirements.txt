@@ -1,3 +1,5 @@
 PySide2
 matplotlib
 pyserial
+mplcursors
+cx_freeze
