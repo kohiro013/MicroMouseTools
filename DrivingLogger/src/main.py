@@ -108,6 +108,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
 
         plots = []
         vline = []
+        markers = []
         texts = []
         for _, graph in enumerate(self.ax.keys()):
             if graph == 'Control_Mode':
@@ -116,7 +117,12 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 self.ax[graph].set_yticks(range(-1, len(mode_list)-1))
                 self.ax[graph].set_yticklabels(mode_list)
             elif graph == 'Battery_Voltage':
-                plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])[0])
+                if 'Boost' in _data:
+                    plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']],
+                                                     _data['Time'], [data/100 for data in _data['Boost']])[0])
+                    self.ax[graph].legend(['Battery', 'Boost'], loc='best')
+                else:
+                    plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])[0])
                 self.ax[graph].set_yticks([i / 10 for i in range(0, 51, 5)])
             elif graph == 'Interrupt_Load':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Load']])[0])
@@ -185,21 +191,24 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
             #self.ax[graph].set_xlabel('Time')
             self.ax[graph].set_ylabel(graph)
             vline.append(self.ax[graph].axvline(0, color='k', ls=':', alpha=0.5, visible=True))
+            markers.append(self.ax[graph].plot([0], [0], marker='.', color='k', alpha=0.5))
             texts.append(self.ax[graph].text(0.02, 0.95, "", horizontalalignment='left', verticalalignment='top', transform=self.ax[graph].transAxes))
 
         def crosshair(sel):
             x = sel.target[0]
             #sel.annotation.set_text(f'x: {x:.2f}\ny: {y:.2f}')
             sel.annotation.set_visible(False)
+            #print(x, max(_data['Time']), len(_data['Time']))
             for num, graph in enumerate(graph_list):
                 vline[num].set_xdata([x])
+                markers[num][0].set_data([x], [plots[num].get_ydata()[int(x*len(_data['Time'])/max(_data['Time']))]])
                 if(self.ax[graph].get_legend() == None):
-                    texts[num].set_text('Time=%1.3f\nValue=%f'%(x, plots[num].get_ydata()[int(x*max(_data['Time'])/len(_data['Time']))]))
+                    texts[num].set_text('Time=%1.3f\nValue=%f'%(x, plots[num].get_ydata()[int(x*len(_data['Time'])/max(_data['Time']))]))
                 else:
                     text = 'Time=%1.3f' %x
                     for i in range(len(self.ax[graph].get_legend().get_texts())):
                         text += '\n%s=%f' %(self.ax[graph].get_legend().get_texts()[i].get_text(), 
-                                            self.ax[graph].get_lines()[i].get_data()[1][int(x*max(_data['Time'])/len(_data['Time']))])
+                                            self.ax[graph].get_lines()[i].get_data()[1][int(x*len(_data['Time'])/max(_data['Time']))])
                     texts[num].set_text(text)
         
         cursor = mplcursors.cursor(plots, hover=True)
@@ -283,7 +292,7 @@ class mpl_widget(QtWidgets.QWidget):
         vertical_layout.addWidget(self.canvas)
         self.setLayout(vertical_layout)
 
-if __name__ == "__main__":
+if __name__ in ('__main__', 'micromouselogger__main__', 'MicroMouseLogger__main__'):
     app = QtWidgets.QApplication(sys.argv)
     window = MatplotlibWidget()
     window.show()
