@@ -224,7 +224,11 @@ class Slalom:
         _ax.add_patch(patches.Rectangle(xy=(pos_pillar[1], pos_pillar[0]+WALL_SIZE), width=WALL_SIZE, height=SECTION_SIZE-WALL_SIZE, fc='r', ec='k'))
 
     def plotSlalomLocus(self, _maze_size, _ax):
-        self.plotMaze(_maze_size, _ax)
+        if self.locus_slip_c['x'][-1] > 90 or self.locus_slip_c['y'][-1] > 90:
+            self.plotMaze(3, _ax)
+        else:
+            self.plotMaze(2, _ax)
+
         _ax.plot(self.locus_ideal_c['x'], self.locus_ideal_c['y'], '-.k')
         _ax.plot(self.locus_slip_c['x'][0:2], self.locus_slip_c['y'][0:2], '-.b')
         _ax.plot(self.locus_slip_c['x'][1:-1], self.locus_slip_c['y'][1:-1], '-.g')
