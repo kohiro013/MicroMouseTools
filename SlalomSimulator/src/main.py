@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 DT = 0.0001
 GRAVITY = 9.80665
-MASS = 12
+MASS = 14
 INERTIA = 2000
 TIRE = 13
 TREAD = 18.5
@@ -18,9 +18,9 @@ CORNERING_FORCE = 0.83
 
 MOT_KT = 0.594
 MOT_KE = 0.062
-MOT_RESIST = 4.7
+MOT_RESIST = 3
 GEAR_RATIO = 37/9
-V_BAT = 3.7
+V_BAT = 5.6
 
 EDGE_PRE_DISTANCE = 6
 EDGE_END_DISTANCE = 8
@@ -129,14 +129,11 @@ class Slalom:
     def plotTest(self, _turn_v, _radius):
         self.time, self.alpha, self.omega, self.pos_ideal, self.pos_slip = calcSlalom(
             self.turn_angle, _turn_v, _radius, self.pos_init[0], self.pos_init[1], self.init_angle)
-        #self.duty_l, self.duty_r = calcVehicleDynamics(self.time, _turn_v, self.alpha, self.omega)
         duty, current = calcVehicleDynamics(self.time, _turn_v, self.alpha, self.omega)
         self.duty_l = duty[0]
         self.duty_r = duty[1]
         self.current_l = current[0]
         self.current_r = current[1]
-        #self.pre_section, self.end_section = calcStraightSection(self.turn_angle,
-        #    self.pos_slip['x'][-1], self.pos_slip['y'][-1], self.pos_slip['dir'][-1], self.init_angle, self.pos_goal[0], self.pos_goal[1])
         self.pre_section = self.end_section = 0
         _ ,self.locus_ideal_c, _ = calcTrajectorySlalom(self.pos_ideal['x'], self.pos_ideal['y'], self.pos_ideal['dir'], 
                 self.pos_init[0], self.pos_init[1], self.init_angle, self.pre_section, self.end_section)
@@ -147,7 +144,7 @@ class Slalom:
     def generateSlalom(self, _gravity):
         if np.rad2deg(self.turn_angle) == 180:
             max_v = np.sqrt(43.5 * _gravity * (GRAVITY*1000))
-            min_v = np.sqrt(43.0 * _gravity * (GRAVITY*1000))
+            min_v = np.sqrt(42.5 * _gravity * (GRAVITY*1000))
             velocity_list = np.arange(max_v, min_v, -0.001)
         else:
             velocity_list = np.arange(2000, 400, -10)
@@ -156,16 +153,23 @@ class Slalom:
             time, alpha, omega, pos_ideal, pos_slip = calcSlalom(
                 self.turn_angle, turn_v, radius, self.pos_init[0], self.pos_init[1], self.init_angle)
             duty, current = calcVehicleDynamics(time, turn_v, alpha, omega)
-            #if np.max(duty[0]) > 0.8 or np.max(duty[1]) > 0.8:
-            #    continue
+
+            # Dutyが100%を超えないように制限
+            if np.max(duty[0]) > 0.9 or np.max(duty[1]) > 0.9:
+                continue
+
             pre_section, end_section = calcStraightSection(self.turn_angle,
                 pos_slip['x'][-1], pos_slip['y'][-1], pos_slip['dir'][-1], self.init_angle, self.pos_goal[0], self.pos_goal[1])
+
+            # 前後距離が壁切れ待機距離より短くならないように制限
             if pre_section < EDGE_PRE_DISTANCE or end_section < EDGE_END_DISTANCE:
                 continue
+            # 柱との距離が一定上に近づかないように制限
             _ ,locus_c, locus_r = calcTrajectorySlalom(pos_slip['x'], pos_slip['y'], pos_slip['dir'], 
                 self.pos_init[0], self.pos_init[1], self.init_angle, pre_section, end_section)
             if np.min(np.sqrt(np.power(45 - locus_r['x'], 2) + np.power(45 - locus_r['y'], 2))) < 8:
                 continue
+            # 奥の区画に侵入しないように制限
             if np.max(locus_c['y']) > 135 - TREAD - 8:
                 continue
             break
@@ -305,8 +309,7 @@ def main():
         'Slalom135out':Slalom(135, [0, 45], 45, [ 90,  0]),
         'SlalomKojima':Slalom( 90, [0, 45], 45, [180, 45]),
     }
-    #gravity_list = np.array([0.5, 0.8, 1., 1.2, 1.4, 1.5, 1.8, 2.])
-    gravity_list = np.array([0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1])
+    gravity_list = np.array([0.5, 0.6, 0.8, 1., 1.1, 1.2, 1.3, 1.4, 1.5])
     generateSlalomHeader(slalom_dict, gravity_list)
     '''
     gravity = 3.
