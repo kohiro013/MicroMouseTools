@@ -5,6 +5,7 @@ import sys
 import serial
 import serial.tools.list_ports
 import datetime
+import time
 import csv
 import mplcursors
 from PySide2 import QtWidgets
@@ -71,8 +72,13 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
         comport.reset_input_buffer()
         
         # ログの通信開始コマンド
+        start_timer = time.time()
         while comport.in_waiting == 0:
             comport.write(b'log\r\n')
+            if time.time() - start_timer > 3 : 
+                QtWidgets.QMessageBox.warning(self, 'Error', 'Not Connected')
+                self.ui.statusbar.showMessage("Not Conneted")
+                return
 
         # ログの受信
         log_line = []
