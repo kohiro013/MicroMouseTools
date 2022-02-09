@@ -44,7 +44,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
         self.ui.treeViewDataList.setModel(self.fileModel)
         self.ui.treeViewDataList.setRootIndex(self.fileModel.index(self.rootPath))
         self.ui.treeViewDataList.setSortingEnabled(True)
-        self.ui.treeViewDataList.sortByColumn(3, QtCore.Qt.SortOrder.AscendingOrder)
+        self.ui.treeViewDataList.sortByColumn(3, QtCore.Qt.SortOrder.DescendingOrder)
         self.ui.treeViewDataList.hideColumn(1)
         self.ui.treeViewDataList.hideColumn(2)
         self.ui.treeViewDataList.hideColumn(3)
