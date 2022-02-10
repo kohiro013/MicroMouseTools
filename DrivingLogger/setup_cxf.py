@@ -21,7 +21,7 @@ if sys.platform == "win32":
     os.environ['TCL_LIBRARY'] = "C:\\Anaconda3\\tcl\\tcl8.6"
     os.environ['TK_LIBRARY'] = "C:\\Anaconda3\\tcl\\tk8.6"
 else:
-    base = None # "Win32GUI"
+    base = None
 
 #importして使っているライブラリを記載
 packages = [
@@ -33,10 +33,12 @@ includes = [
     "sys",
     "os",
     "serial",
+    "time",
     "csv",
     "datetime",
     "matplotlib",
     "PySide2",
+    "mplcursors"
 ]
 
 #excludesでは、パッケージ化しないライブラリやモジュールを指定する。
@@ -71,16 +73,21 @@ excludes = [
     "zmq",
 ]
 
-include_files = [
-     (os.path.join('C:\\Anaconda3\\DLLs', 'tcl86t.dll'), os.path.join('lib', 'tcl86t.dll')),
-     (os.path.join('C:\\Anaconda3\\DLLs', 'tk86t.dll'),  os.path.join('lib', 'tk86t.dll')),
-     (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_core.dll'), 'mkl_core.dll'),
-     (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_def.dll'), 'mkl_def.dll'),
-     (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_intel_thread.dll'), 'mkl_intel_thread.dll'),
-     (os.path.join('C:\\Anaconda3\\Library\\bin', 'libiomp5md.dll'), 'libiomp5md.dll'),
-     'C:\\Anaconda3\\Library\\plugins\\platforms',
-     # add here further files which need to be included as described in 1.
-]
+if sys.platform == "win32":
+    include_files = [
+        (os.path.join('C:\\Anaconda3\\DLLs', 'tcl86t.dll'), os.path.join('lib', 'tcl86t.dll')),
+        (os.path.join('C:\\Anaconda3\\DLLs', 'tk86t.dll'),  os.path.join('lib', 'tk86t.dll')),
+        (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_core.dll'), 'mkl_core.dll'),
+        (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_def.dll'), 'mkl_def.dll'),
+        (os.path.join('C:\\Anaconda3\\Library\\bin', 'mkl_intel_thread.dll'), 'mkl_intel_thread.dll'),
+        (os.path.join('C:\\Anaconda3\\Library\\bin', 'libiomp5md.dll'), 'libiomp5md.dll'),
+        'C:\\Anaconda3\\Library\\plugins\\platforms',
+        # add here further files which need to be included as described in 1.
+    ]
+else:
+    include_files = [
+
+    ]
 
 ##### 細かい設定はここまで #####
 
@@ -88,7 +95,7 @@ include_files = [
 exe = Executable(
     script = file_path,
     base = base,
-    targetName = 'MicroMouseLogger.exe',
+    targetName = 'MicroMouseLogger.exe'
 )
  
 # セットアップ
