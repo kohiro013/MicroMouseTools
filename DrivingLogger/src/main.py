@@ -161,11 +161,21 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
             elif graph == 'Distance':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_D']], 'k',
                                                  _data['Time'], [data/10 for data in _data['Measure_D']], 'C1')[0])
-                self.ax[graph].legend(['Target', 'Measure'], loc='best')
+                twinx = self.ax[graph].twinx()
+                twinx.plot(_data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_D'], _data['Measure_D'])], 'C0')
+                twinx.set_ylim(-10, 10)
+                twinx.set_yticks(range(-10, 11, 1))
+                self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
+                                      labels = ['Target', 'Measure', 'Error'], loc = 'best')
             elif graph == 'Angle':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Theta']], 'k',
                                                  _data['Time'], [data/10 for data in _data['Measure_Theta']], 'C1')[0])
-                self.ax[graph].legend(['Target', 'Measure'], loc='best')
+                twinx = self.ax[graph].twinx()
+                twinx.plot(_data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_Theta'], _data['Measure_Theta'])], 'C0')
+                twinx.set_ylim(-10, 10)
+                twinx.set_yticks(range(-10, 11, 1))
+                self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
+                                      labels = ['Target', 'Measure', 'Error'], loc = 'best')
             elif graph == 'IR_Sensor':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_SL']], 'C0',
                                                  _data['Time'], [data/10 for data in _data['Sensor_FL']], 'C2',
@@ -296,7 +306,7 @@ class mpl_widget(QtWidgets.QWidget):
     def __init__(self, parent = None):
         QtWidgets.QWidget.__init__(self, parent)
         self.canvas = backend_qt5agg.FigureCanvas(Figure())
-        self.canvas.figure.subplots_adjust(left=0.08,right=0.99,bottom=0.01,top=0.99,hspace=0.2,wspace=0.0)
+        self.canvas.figure.subplots_adjust(left=0.08,right=0.97,bottom=0.01,top=0.99,hspace=0.2,wspace=0.0)
 
         vertical_layout = QtWidgets.QVBoxLayout()
         vertical_layout.addWidget(self.canvas)
