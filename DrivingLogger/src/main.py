@@ -127,7 +127,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                     plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']],
                                                      _data['Time'], [data/100 for data in _data['Boost']])[0])
                     self.ax[graph].set_yticks([i / 10 for i in range(20, 91, 5)])
-                    self.ax[graph].legend(['Battery', 'Boost'], loc='best')
+                    self.ax[graph].legend(['Battery', 'Boost'], loc='upper right')
                 else:
                     plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])[0])
                     self.ax[graph].set_yticks([i / 10 for i in range(0, 51, 5)])
@@ -139,25 +139,25 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                                                  _data['Time'], [data/10 for data in _data['Duty_R']], 'C1')[0])
                 #self.ax[graph].plot()
                 self.ax[graph].set_yticks([i / 10 for i in range(-1000, 1001, 100)])
-                self.ax[graph].legend(['Left', 'Right'], loc='best')
+                self.ax[graph].legend(['Left', 'Right'], loc='upper right')
             elif graph == 'Current':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Current_L']],
                                                  _data['Time'], [data/10 for data in _data['Current_R']])[0])
                 #self.ax[graph].set_yticks([i / 10 for i in range(-1000, 1001, 100)])
-                self.ax[graph].legend(['Left', 'Right'], loc='best')
+                self.ax[graph].legend(['Left', 'Right'], loc='upper right')
             elif graph == 'Force':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Force_L']],
                                                  _data['Time'], [data/10 for data in _data['Force_R']])[0])
                 self.ax[graph].set_yticks([i / 10 for i in range(0, 3001, 500)])
-                self.ax[graph].legend(['Left', 'Right'], loc='best')
+                self.ax[graph].legend(['Left', 'Right'], loc='upper right')
             elif graph == 'Velocity':
                 plots.append(self.ax[graph].plot(_data['Time'], _data['Target_V'], 'k',
                                                  _data['Time'], _data['Measure_V'], 'C1')[0])
-                self.ax[graph].legend(['Target', 'Measure'], loc='best')
+                self.ax[graph].legend(['Target', 'Measure'], loc='upper right')
             elif graph == 'Angular_Velocity':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Omega']], 'k',
                                                  _data['Time'], [data/10 for data in _data['Measure_Omega']], 'C1')[0])
-                self.ax[graph].legend(['Target', 'Measure'], loc='best')
+                self.ax[graph].legend(['Target', 'Measure'], loc='upper right')
             elif graph == 'Distance':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_D']], 'k',
                                                  _data['Time'], [data/10 for data in _data['Measure_D']], 'C1',
@@ -168,7 +168,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 twinx.set_ylim(-10, 10)
                 twinx.set_yticks(range(-10, 11, 1))
                 self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
-                                      labels = ['Target', 'Measure', 'Error'], loc = 'best')
+                                      labels = ['Target', 'Measure', 'Error'], loc = 'upper right')
             elif graph == 'Angle':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Theta']], 'k',
                                                  _data['Time'], [data/10 for data in _data['Measure_Theta']], 'C1',
@@ -179,23 +179,23 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 twinx.set_ylim(-10, 10)
                 twinx.set_yticks(range(-10, 11, 1))
                 self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
-                                      labels = ['Target', 'Measure', 'Error'], loc = 'best')
+                                      labels = ['Target', 'Measure', 'Error'], loc = 'upper right')
             elif graph == 'IR_Sensor':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Sensor_SL']], 'C0',
                                                  _data['Time'], [data/10 for data in _data['Sensor_FL']], 'C2',
                                                  _data['Time'], [data/10 for data in _data['Sensor_FR']], 'C3',
                                                  _data['Time'], [data/10 for data in _data['Sensor_SR']], 'C1')[0])
                 self.ax[graph].set_ylim(0, 200)
-                self.ax[graph].legend(['SL', 'FL', 'FR', 'SR'], loc='best')
+                self.ax[graph].legend(['SL', 'FL', 'FR', 'SR'], loc='upper right')
             elif graph == 'Sensor_Delta':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['SensorDelta_SL']], 'C0',
                                                  _data['Time'], [data/10 for data in _data['SensorDelta_SR']], 'C1')[0])
                 self.ax[graph].set_ylim(-50, 50)
-                self.ax[graph].legend(['SL', 'SR'], loc='best')
+                self.ax[graph].legend(['SL', 'SR'], loc='upper right')
             elif graph == 'Wall_Edge':
                 plots.append(self.ax[graph].plot(_data['Time'], _data['Edge_SL'], 'C0',
                                                  _data['Time'], _data['Edge_SR'], 'C1')[0])
-                self.ax[graph].legend(['SL', 'SR'], loc='best')
+                self.ax[graph].legend(['SL', 'SR'], loc='upper right')
             elif graph == 'Velocity_Control':
                 plots.append(self.ax[graph].plot(_data['Time'], _data['Control_Encoder'])[0])
                 self.ax[graph].set_ylim(-8000, 8000)
@@ -204,7 +204,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                                                  _data['Time'], [data/10 for data in _data['Control_Angle']],
                                                  _data['Time'], [data/10 for data in _data['Control_Sensor']])[0])
                 self.ax[graph].set_ylim(-800, 800)
-                self.ax[graph].legend(['Gyro', 'Angle', 'Sensor'], loc='best')
+                self.ax[graph].legend(['Gyro', 'Angle', 'Sensor'], loc='upper right')
             elif graph == 'Gap':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Gap']])[0])
 
