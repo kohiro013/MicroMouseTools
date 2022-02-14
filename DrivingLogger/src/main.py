@@ -203,7 +203,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Control_Gyro']],
                                                  _data['Time'], [data/10 for data in _data['Control_Angle']],
                                                  _data['Time'], [data/10 for data in _data['Control_Sensor']])[0])
-                self.ax[graph].set_ylim(-800, 800)
+                self.ax[graph].set_ylim(-1000, 1000)
                 self.ax[graph].legend(['Gyro', 'Angle', 'Sensor'], loc='upper right')
             elif graph == 'Gap':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Gap']])[0])
