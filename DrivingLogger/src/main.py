@@ -160,18 +160,22 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 self.ax[graph].legend(['Target', 'Measure'], loc='best')
             elif graph == 'Distance':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_D']], 'k',
-                                                 _data['Time'], [data/10 for data in _data['Measure_D']], 'C1')[0])
+                                                 _data['Time'], [data/10 for data in _data['Measure_D']], 'C1',
+                                                 _data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_D'], _data['Measure_D'])])[0])
+                self.ax[graph].get_lines()[2].set_linestyle('None')
                 twinx = self.ax[graph].twinx()
-                twinx.plot(_data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_D'], _data['Measure_D'])], 'C0')
+                twinx.plot(_data['Time'], self.ax[graph].get_lines()[2].get_ydata(), 'C0')
                 twinx.set_ylim(-10, 10)
                 twinx.set_yticks(range(-10, 11, 1))
                 self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
                                       labels = ['Target', 'Measure', 'Error'], loc = 'best')
             elif graph == 'Angle':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['Target_Theta']], 'k',
-                                                 _data['Time'], [data/10 for data in _data['Measure_Theta']], 'C1')[0])
+                                                 _data['Time'], [data/10 for data in _data['Measure_Theta']], 'C1',
+                                                 _data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_Theta'], _data['Measure_Theta'])])[0])
+                self.ax[graph].get_lines()[2].set_linestyle('None')
                 twinx = self.ax[graph].twinx()
-                twinx.plot(_data['Time'], [(ref - data)/10 for ref, data in zip(_data['Target_Theta'], _data['Measure_Theta'])], 'C0')
+                twinx.plot(_data['Time'], self.ax[graph].get_lines()[2].get_ydata(), 'C0')
                 twinx.set_ylim(-10, 10)
                 twinx.set_yticks(range(-10, 11, 1))
                 self.ax[graph].legend(handles = [self.ax[graph].get_lines()[0], self.ax[graph].get_lines()[1], twinx.get_lines()[0]], 
