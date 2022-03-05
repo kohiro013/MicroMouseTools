@@ -126,7 +126,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                 if 'Boost' in _data:
                     plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']],
                                                      _data['Time'], [data/100 for data in _data['Boost']])[0])
-                    self.ax[graph].set_yticks([i / 10 for i in range(20, 91, 5)])
+                    self.ax[graph].set_yticks([i / 10 for i in range(20, 51, 5)])
                     self.ax[graph].legend(['Battery', 'Boost'], loc='upper right')
                 else:
                     plots.append(self.ax[graph].plot(_data['Time'], [data/100 for data in _data['Battery']])[0])
@@ -185,7 +185,7 @@ class MatplotlibWidget(QtWidgets.QMainWindow):
                                                  _data['Time'], [data/10 for data in _data['Sensor_FL']], 'C2',
                                                  _data['Time'], [data/10 for data in _data['Sensor_FR']], 'C3',
                                                  _data['Time'], [data/10 for data in _data['Sensor_SR']], 'C1')[0])
-                self.ax[graph].set_ylim(0, 200)
+                self.ax[graph].set_ylim(0, 150)
                 self.ax[graph].legend(['SL', 'FL', 'FR', 'SR'], loc='upper right')
             elif graph == 'Sensor_Delta':
                 plots.append(self.ax[graph].plot(_data['Time'], [data/10 for data in _data['SensorDelta_SL']], 'C0',
